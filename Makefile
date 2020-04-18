@@ -1,5 +1,5 @@
 TARGET = suer
-VERSION = 0.1.1
+VERSION = 0.1.2
 CC = xcrun -sdk iphoneos clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
