@@ -3,7 +3,7 @@ int main(int argc, const char **argv, const char **envp) {
         setuid(0);
     }
 
-    if (getuid() != 0 || geteuid != 0) {
+    if (getuid() != 0 || geteuid() != 0) {
         printf("Can't set uid as 0.\n");
         return 1;
     }
