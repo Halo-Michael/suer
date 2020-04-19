@@ -45,6 +45,6 @@ int main(int argc, const char **argv, const char **envp) {
 
     NSString *command = [args componentsJoinedByString:@" "];
 
-    int ret = system([command UTF8String]);
-    return ret;
+    int stats = system([command UTF8String]);
+    return WEXITSTATUS(stats);
 }
