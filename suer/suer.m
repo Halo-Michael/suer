@@ -20,27 +20,23 @@ int main(int argc, const char **argv, const char **envp) {
     }
 
     NSMutableArray *args = [NSMutableArray array];
-    int i = 1;
-    while (i < argc) {
-        if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@" "] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"$"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"`"]){
+    for (int i = 1; i < argc; i++) {
+        if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@" "] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"$"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"`"]) {
             [args addObject:[NSString stringWithFormat:@"'%s'", argv[i]]];
-        } else if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\""] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"'"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\\"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"*"]){
+        } else if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\""] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"'"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\\"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"*"]) {
             NSString *thisarg = @"";
-            int j = 0;
-            while (j < strlen(argv[i])){
+            for (int j = 0; j < strlen(argv[i]); j++) {
                 if (argv[i][j] == '\"' || argv[i][j] == '\'' || argv[i][j] == '\\' || argv[i][j] == '*'){
                     thisarg = [thisarg stringByAppendingString:@"\\"];
                     thisarg = [thisarg stringByAppendingFormat:@"%c", argv[i][j]];
                 } else {
                     thisarg = [thisarg stringByAppendingFormat:@"%c", argv[i][j]];
                 }
-                j++;
             }
             [args addObject:thisarg];
         } else {
             [args addObject:[NSString stringWithFormat:@"%s", argv[i]]];
         }
-        i++;
     }
 
     NSString *command = [args componentsJoinedByString:@" "];
