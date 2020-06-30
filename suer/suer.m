@@ -8,12 +8,12 @@ int main(int argc, const char **argv, const char **envp) {
     }
 
     if (getuid() != 0 || geteuid() != 0 || getgid() != 0) {
-        NSString *error = @"";
+        NSMutableString *error = [[NSMutableString alloc] init];
         if (getuid() != 0 || geteuid() != 0){
-            error = [error stringByAppendingString:@"Can't set uid as 0.\n"];
+            [error appendString:@"Can't set uid as 0.\n"];
         }
         if (getgid() != 0){
-            error = [error stringByAppendingString:@"Can't set gid as 0.\n"];
+            [error appendString:@"Can't set gid as 0.\n"];
         }
         printf("%s", [error UTF8String]);
         return 1;
