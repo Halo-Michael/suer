@@ -41,7 +41,7 @@ int main(int argc, const char **argv, const char **envp) {
                     [thisArg appendString:@"\\"];
                     [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                 } else {
-                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];s
+                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                 }
             }
             arg = [NSString stringWithFormat:@"%@", thisArg];
