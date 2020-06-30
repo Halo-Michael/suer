@@ -1,3 +1,5 @@
+#import <CoreFoundation/CoreFoundation.h>
+
 int main(int argc, const char **argv, const char **envp) {
     if (getuid() != 0) {
         setuid(0);
@@ -51,6 +53,5 @@ int main(int argc, const char **argv, const char **envp) {
 
     NSString *command = [args componentsJoinedByString:@" "];
 
-    int status = system([command UTF8String]);
-    return WEXITSTATUS(status);
+    return WEXITSTATUS(system([command UTF8String]));
 }

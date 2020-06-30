@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 int main()
@@ -9,14 +9,8 @@ int main()
         return 1;
     }
 
-    char *commands[2] = {"chown root:wheel /usr/bin/suer", "chmod 6755 /usr/bin/suer"};
+    chown("/usr/bin/suer", 0, 0);
+    chmod("/usr/bin/suer", 06755);
 
-    for (int i = 0; i < 2; i++) {
-        int status = system(commands[i]);
-        if (WEXITSTATUS(status) != 0) {
-            printf("Error in command: \"%s\"\n", commands[i]);
-            return WEXITSTATUS(status);
-        }
-    }
     return 0;
 }
