@@ -1,7 +1,3 @@
-export TARGET=iphone:clang::9.0
-export ARCHS=armv7 arm64 arm64e
-export DEBUG=0
-
 include $(THEOS)/makefiles/common.mk
 
 TOOL_NAME = suer

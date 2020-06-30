@@ -21,22 +21,32 @@ int main(int argc, const char **argv, const char **envp) {
 
     NSMutableArray *args = [NSMutableArray array];
     for (int i = 1; i < argc; i++) {
-        if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@" "] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"$"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"`"]) {
-            [args addObject:[NSString stringWithFormat:@"'%s'", argv[i]]];
-        } else if ([[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\""] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"'"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"\\"] || [[NSString stringWithFormat:@"%s", argv[i]] containsString:@"*"]) {
-            NSString *thisarg = @"";
-            for (int j = 0; j < strlen(argv[i]); j++) {
-                if (argv[i][j] == '\"' || argv[i][j] == '\'' || argv[i][j] == '\\' || argv[i][j] == '*'){
-                    thisarg = [thisarg stringByAppendingString:@"\\"];
-                    thisarg = [thisarg stringByAppendingFormat:@"%c", argv[i][j]];
+        NSString *arg = [[NSString alloc] initWithUTF8String:argv[i]];
+        if ([arg containsString:@" "] || [arg containsString:@"$"] || [arg containsString:@"`"] || [arg containsString:@"\""] || [arg containsString:@"'"] || [arg containsString:@"\\"] || [arg containsString:@"*"]) {
+            NSMutableString *thisArg = [[NSMutableString alloc] init];
+            for (int j = 0; j < [[NSNumber numberWithUnsignedInteger:[arg length]] intValue]; j++) {
+                if ([arg characterAtIndex:j] == ' ' || [arg characterAtIndex:j] == '`'){
+                    [thisArg appendString:@"\'"];
+                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                    [thisArg appendString:@"\'"];
+                } else if ([arg characterAtIndex:j] == '$') {
+                    [thisArg appendString:@"\'"];
+                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                    if ([arg characterAtIndex:(j + 1)] == '{') {
+                        j++;
+                        [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                    }
+                    [thisArg appendString:@"\'"];
+                } else if ([arg characterAtIndex:j] == '\"' || [arg characterAtIndex:j] == '\'' || [arg characterAtIndex:j] == '\\' || [arg characterAtIndex:j] == '*') {
+                    [thisArg appendString:@"\\"];
+                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                 } else {
-                    thisarg = [thisarg stringByAppendingFormat:@"%c", argv[i][j]];
+                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];s
                 }
             }
-            [args addObject:thisarg];
-        } else {
-            [args addObject:[NSString stringWithFormat:@"%s", argv[i]]];
+            arg = [NSString stringWithFormat:@"%@", thisArg];
         }
+        [args addObject:arg];
     }
 
     NSString *command = [args componentsJoinedByString:@" "];

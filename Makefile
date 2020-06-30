@@ -1,6 +1,8 @@
-TARGET = suer
-VERSION = 0.2.2
-CC = xcrun -sdk iphoneos clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+export TARGET = iphone:clang:13.0:9.0
+export ARCHS = armv7 arm64 arm64e
+export VERSION = 0.3.0
+export DEBUG = no
+CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
@@ -21,7 +23,7 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 suer: clean
-	sh make-suer.sh
+	cd suer && make
 
 clean:
 	rm -rf com.michael.suer_* postinst suer/.theos
