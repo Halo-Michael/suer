@@ -1,5 +1,5 @@
 Package: com.michael.suer
-Version: 0.3.1
+Version: 0.3.2
 Section: Tweaks
 Name: suer
 Author: halo_michael <yc992147156@me.com>
@@ -7,5 +7,5 @@ Sponsor: halo_michael <yc992147156@me.com>
 Maintainer: halo_michael <yc992147156@me.com>
 Depends: firmware (>= 9.0)
 Architecture: iphoneos-arm
-Description: Temporaily assume root priviledges but need not password.
+Description: Temporarily assume root privileges but need not password.
 Depiction: https://halo-michael.github.io/repo/info/suer

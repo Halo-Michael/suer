@@ -1,4 +1,8 @@
-#import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
+
+void usage() {
+    printf("usage: suer [command]\n");
+}
 
 int main(int argc, const char **argv, const char **envp) {
     if (getuid() != 0) {
@@ -9,16 +13,21 @@ int main(int argc, const char **argv, const char **envp) {
         setgid(0);
     }
 
-    if (getuid() != 0 || geteuid() != 0 || getgid() != 0) {
-        NSMutableString *error = [[NSMutableString alloc] init];
-        if (getuid() != 0 || geteuid() != 0){
-            [error appendString:@"Can't set uid as 0.\n"];
-        }
-        if (getgid() != 0){
-            [error appendString:@"Can't set gid as 0.\n"];
-        }
-        printf("%s", [error UTF8String]);
+    NSMutableString *error = [[NSMutableString alloc] init];
+    if (getuid() != 0 || geteuid() != 0){
+        [error appendString:@"Can't set uid as 0.\n"];
+    }
+    if (getgid() != 0){
+        [error appendString:@"Can't set gid as 0.\n"];
+    }
+    if (![error isEqual:@""]) {
+        printf("%s\n", [error UTF8String]);
         return 1;
+    }
+
+    if (argc == 1) {
+        usage();
+        return 2;
     }
 
     NSMutableArray *args = [NSMutableArray array];
