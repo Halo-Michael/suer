@@ -1,7 +1,4 @@
-export TARGET = iphone:clang:13.0:9.0
-export ARCHS = armv7 arm64 arm64e
-export VERSION = 0.3.2
-export DEBUG = no
+TARGET = suer
 CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
@@ -14,7 +11,7 @@ all: clean postinst suer
 	mv postinst com.michael.suer_$(VERSION)_iphoneos-arm/DEBIAN
 	mkdir com.michael.suer_$(VERSION)_iphoneos-arm/usr
 	mkdir com.michael.suer_$(VERSION)_iphoneos-arm/usr/bin
-	mv suer/.theos/obj/suer com.michael.suer_$(VERSION)_iphoneos-arm/usr/bin
+	mv suer com.michael.suer_$(VERSION)_iphoneos-arm/usr/bin
 	dpkg -b com.michael.suer_$(VERSION)_iphoneos-arm
 
 postinst: clean
@@ -23,7 +20,9 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 suer: clean
-	cd suer && make
+	$(CC) -fobjc-arc suer.m -o suer
+	strip suer
+	$(LDID) -Sentitlements.xml suer
 
 clean:
-	rm -rf com.michael.suer_* postinst suer/.theos
+	rm -rf com.michael.suer_* postinst suer
