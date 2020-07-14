@@ -1,5 +1,5 @@
 TARGET = suer
-VERSION = 0.3.2
+VERSION = 0.3.3
 CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 

@@ -36,23 +36,33 @@ int main(int argc, const char **argv, const char **envp) {
         if ([arg containsString:@" "] || [arg containsString:@"$"] || [arg containsString:@"`"] || [arg containsString:@"\""] || [arg containsString:@"'"] || [arg containsString:@"\\"] || [arg containsString:@"*"]) {
             NSMutableString *thisArg = [[NSMutableString alloc] init];
             for (int j = 0; j < [[NSNumber numberWithUnsignedInteger:[arg length]] intValue]; j++) {
-                if ([arg characterAtIndex:j] == ' ' || [arg characterAtIndex:j] == '`'){
-                    [thisArg appendString:@"\'"];
-                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
-                    [thisArg appendString:@"\'"];
-                } else if ([arg characterAtIndex:j] == '$') {
-                    [thisArg appendString:@"\'"];
-                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
-                    if ([arg characterAtIndex:(j + 1)] == '{') {
-                        j++;
+                switch ([arg characterAtIndex:j]) {
+                    case ' ':
+                    case '`':
+                        [thisArg appendString:@"\'"];
                         [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
-                    }
-                    [thisArg appendString:@"\'"];
-                } else if ([arg characterAtIndex:j] == '\"' || [arg characterAtIndex:j] == '\'' || [arg characterAtIndex:j] == '\\' || [arg characterAtIndex:j] == '*') {
-                    [thisArg appendString:@"\\"];
-                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
-                } else {
-                    [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                        [thisArg appendString:@"\'"];
+                        break;
+                    case '$':
+                        [thisArg appendString:@"\'"];
+                        [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                        switch ([arg characterAtIndex:(j + 1)]) {
+                            case '{':
+                            case '(':
+                                j++;
+                                [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                        }
+                        [thisArg appendString:@"\'"];
+                        break;
+                    case '\"':
+                    case '\'':
+                    case '\\':
+                    case '*':
+                        [thisArg appendString:@"\\"];
+                        [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
+                        break;
+                    default:
+                        [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                 }
             }
             arg = [NSString stringWithFormat:@"%@", thisArg];
