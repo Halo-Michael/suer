@@ -58,6 +58,8 @@ int main(int argc, const char **argv, const char **envp) {
                     case '\'':
                     case '\\':
                     case '*':
+                    case '(':
+                    case ')':
                         [thisArg appendString:@"\\"];
                         [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                         break;
