@@ -1,6 +1,6 @@
 TARGET = suer
-VERSION = 0.4.0
-CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+VERSION = 0.4.1
+CC = xcrun -sdk iphoneos clang -arch armv7 -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
@@ -21,7 +21,7 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 suer: clean
-	$(CC) -fobjc-arc suer.m -o suer
+	$(CC) suer.c -o suer
 	strip suer
 	$(LDID) -Sentitlements.xml suer
 
