@@ -29,14 +29,13 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
-    char *command[argc];
     for (int i = 0; i < argc - 1; i++) {
-        command[i] = argv[i + 1];
+        argv[i] = argv[i + 1];
     }
-    command[argc - 1] = NULL;
+    argv[argc - 1] = NULL;
 
-    execvp(command[0], command);
+    execvp(argv[0], argv);
 
-    perror(command[0]);
+    perror(argv[0]);
     return -1;
 }
