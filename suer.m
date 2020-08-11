@@ -4,7 +4,7 @@ void usage() {
     printf("usage: suer [command]\n");
 }
 
-int main(int argc, const char **argv, const char **envp) {
+int main(const int argc, const char **argv) {
     if (getuid() != 0) {
         setuid(0);
     }
@@ -21,7 +21,7 @@ int main(int argc, const char **argv, const char **envp) {
         [error appendString:@"Can't set gid as 0.\n"];
     }
     if (![error isEqual:@""]) {
-        printf("%s\n", [error UTF8String]);
+        printf("%s", [error UTF8String]);
         return 1;
     }
 
@@ -67,13 +67,17 @@ int main(int argc, const char **argv, const char **envp) {
                         [thisArg appendFormat:@"%c", [arg characterAtIndex:j]];
                 }
             }
-            arg = [NSString stringWithFormat:@"%@", thisArg];
+            arg = [NSString stringWithString:thisArg];
         }
         [args addObject:arg];
     }
 
-    NSString *command = [args componentsJoinedByString:@" "];
-
-    int status = system([command UTF8String]);
-    return WEXITSTATUS(status);
+    char *command[[args count] + 1];
+    for (int i = 0; i < [args count]; i++) {
+        command[i] = (char *)[args[i] UTF8String];
+    }
+    command[[args count]] = NULL;
+    execvp(command[0], command);
+    perror(command[0]);
+    return -1;
 }
