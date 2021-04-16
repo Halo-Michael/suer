@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
-    argv[argc] = NULL;
     execvp(argv[1], argv + 1);
 
     perror(argv[1]);

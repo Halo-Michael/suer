@@ -4,7 +4,7 @@
 
 int main()
 {
-    if (geteuid() != 0) {
+    if (getuid() != 0) {
         printf("Run this as root!\n");
         return 1;
     }
