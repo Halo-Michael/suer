@@ -29,13 +29,9 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
-    for (int i = 0; i < argc - 1; i++) {
-        argv[i] = argv[i + 1];
-    }
-    argv[argc - 1] = NULL;
+    argv[argc] = NULL;
+    execvp(argv[1], argv + 1);
 
-    execvp(argv[0], argv);
-
-    perror(argv[0]);
+    perror(argv[1]);
     return -1;
 }
