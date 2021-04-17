@@ -1,4 +1,7 @@
+#include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/errno.h>
 #include <unistd.h>
 
 void usage() {
@@ -30,6 +33,49 @@ int main(int argc, char *argv[]) {
     }
 
     execvp(argv[1], argv + 1);
+
+    int eno = errno;
+    if (eno == ENOEXEC || eno == EPERM) {
+#define POUNDBANGLIMIT 128
+        char execvbuf[POUNDBANGLIMIT + 1], *ptr, *ptr2;
+        int fd, ct, t0;
+        if ((fd = open(argv[1], O_RDONLY|O_NOCTTY)) >= 0) {
+            memset(execvbuf, '\0', POUNDBANGLIMIT + 1);
+            ct = read(fd, execvbuf, POUNDBANGLIMIT);
+            close(fd);
+            if (ct >= 0) {
+                if (ct >= 2 && execvbuf[0] == '#' && execvbuf[1] == '!') {
+                    for (t0 = 0; t0 != ct; t0++)
+                    if (execvbuf[t0] == '\n')
+                        break;
+                    if (t0 == ct)
+                        printf("%s: bad interpreter: %s: %d\n", argv[1], execvbuf + 2, eno);
+                    else {
+                        execvbuf[t0] = '\0';
+                        for (ptr = execvbuf + 2; *ptr && *ptr == ' '; ptr++);
+                        for (ptr2 = ptr; *ptr && *ptr != ' '; ptr++);
+                        if (*ptr) {
+                            *ptr = '\0';
+                            argv[-1] = ptr2;
+                            argv[0] = ptr + 1;
+                            execv(ptr2, argv - 1);
+                        } else {
+                            argv[0] = ptr2;
+                            execv(ptr2, argv);
+                        }
+                    }
+                } else {
+                    for (t0 = 0; t0 != ct; t0++)
+                    if (!execvbuf[t0])
+                        break;
+                    if (t0 == ct) {
+                        argv[0] = "sh";
+                        execvp("sh", argv);
+                    }
+                }
+            }
+        }
+    }
 
     perror(argv[1]);
     return -1;
