@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/errno.h>
 #include <unistd.h>
@@ -35,11 +36,12 @@ int main(int argc, char *argv[]) {
     execvp(argv[1], argv + 1);
 
     int eno = errno;
-    if (eno == ENOEXEC || eno == EPERM) {
+    if (eno == EPERM || eno == ENOENT || eno == ENOEXEC || eno == EACCES) {
 #define POUNDBANGLIMIT 128
         char execvbuf[POUNDBANGLIMIT + 1], *ptr, *ptr2;
         int fd, ct, t0;
         if ((fd = open(argv[1], O_RDONLY|O_NOCTTY)) >= 0) {
+shellexec:
             memset(execvbuf, '\0', POUNDBANGLIMIT + 1);
             ct = read(fd, execvbuf, POUNDBANGLIMIT);
             close(fd);
@@ -73,6 +75,27 @@ int main(int argc, char *argv[]) {
                         execvp("sh", argv);
                     }
                 }
+            }
+        } else {
+            char *envPath = getenv("PATH");
+            if (envPath != NULL) {
+                char *paths = (char *)malloc((strlen(envPath) + 1) * sizeof(char));
+                char *pPaths = paths;
+                strcpy(paths, envPath);
+                unsigned long length = strlen(argv[1]);
+                char *p;
+                while ((p = strsep(&paths, ":")) != NULL) {
+                    char *shellPath = (char *)calloc(strlen(p) + length + 2, sizeof(char));
+                    *(char *)(strcpy(shellPath, p) + strlen(p)) = '/';
+                    strcat(shellPath, argv[1]);
+                    if ((fd = open(shellPath, O_RDONLY|O_NOCTTY)) >= 0) {
+                        free(shellPath);
+                        free(pPaths);
+                        goto shellexec;
+                    }
+                    free(shellPath);
+                }
+                free(pPaths);
             }
         }
     }
