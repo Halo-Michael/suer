@@ -100,6 +100,7 @@ shellexec:
         }
     }
 
+    errno = eno;
     perror(argv[1]);
     return -1;
 }
