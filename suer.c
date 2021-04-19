@@ -10,27 +10,22 @@ void usage() {
 }
 
 int main(int argc, char *argv[]) {
-    if (getuid() != 0) {
-        setuid(0);
-    }
-
-    if (getgid() != 0) {
-        setgid(0);
-    }
-
-    if (getuid() != 0 || geteuid() != 0 || getgid() != 0) {
-        if (getuid() != 0 || geteuid() != 0) {
+    int ret = 0;
+    if (getuid() || setuid(0))
+        ret += 1;
+    if (getgid() || setgid(0))
+        ret += 2;
+    if (ret) {
+        if (ret & 1)
             printf("Can't set uid as 0.\n");
-        }
-        if (getgid() != 0) {
+        if (ret >> 1 & 1)
             printf("Can't set gid as 0.\n");
-        }
-        return 1;
+        return ret;
     }
 
     if (argc == 1) {
         usage();
-        return 2;
+        return 4;
     }
 
     execvp(argv[1], argv + 1);
@@ -45,9 +40,8 @@ shellexec:
             memset(execvbuf, '\0', POUNDBANGLIMIT + 1);
             ct = read(fd, execvbuf, POUNDBANGLIMIT);
             close(fd);
-            if (ct >= 0) {
-                if (ct >= 2 && execvbuf[0] == '#' && execvbuf[1] == '!') {
-                    for (t0 = 0; t0 != ct; t0++)
+            if (ct >= 2 && execvbuf[0] == '#' && execvbuf[1] == '!') {
+                for (t0 = 0; t0 != ct; t0++) {
                     if (execvbuf[t0] == '\n')
                         break;
                     if (t0 == ct)
@@ -66,8 +60,9 @@ shellexec:
                             execv(ptr2, argv);
                         }
                     }
-                } else {
-                    for (t0 = 0; t0 != ct; t0++)
+                }
+            } else {
+                for (t0 = 0; t0 != ct; t0++) {
                     if (!execvbuf[t0])
                         break;
                     if (t0 == ct) {
