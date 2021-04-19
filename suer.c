@@ -11,9 +11,9 @@ void usage() {
 
 int main(int argc, char *argv[]) {
     int ret = 0;
-    if (getuid() || setuid(0))
+    if (getuid() && setuid(0))
         ret += 1;
-    if (getgid() || setgid(0))
+    if (getgid() && setgid(0))
         ret += 2;
     if (ret) {
         if (ret & 1)
