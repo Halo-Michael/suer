@@ -40,10 +40,12 @@ shellexec:
             memset(execvbuf, '\0', POUNDBANGLIMIT + 1);
             ct = read(fd, execvbuf, POUNDBANGLIMIT);
             close(fd);
-            if (ct >= 2 && execvbuf[0] == '#' && execvbuf[1] == '!') {
-                for (t0 = 0; t0 != ct; t0++) {
-                    if (execvbuf[t0] == '\n')
-                        break;
+            if (ct >= 0) {
+                if (ct >= 2 && execvbuf[0] == '#' && execvbuf[1] == '!') {
+                    for (t0 = 0; t0 != ct; t0++) {
+                        if (execvbuf[t0] == '\n')
+                            break;
+                    }
                     if (t0 == ct)
                         printf("%s: bad interpreter: %s: %d\n", argv[1], execvbuf + 2, eno);
                     else {
@@ -60,11 +62,11 @@ shellexec:
                             execv(ptr2, argv);
                         }
                     }
-                }
-            } else {
-                for (t0 = 0; t0 != ct; t0++) {
-                    if (!execvbuf[t0])
-                        break;
+                } else {
+                    for (t0 = 0; t0 != ct; t0++) {
+                        if (!execvbuf[t0])
+                            break;
+                    }
                     if (t0 == ct) {
                         argv[0] = "sh";
                         execvp("sh", argv);
@@ -86,6 +88,7 @@ shellexec:
                     if ((fd = open(shellPath, O_RDONLY|O_NOCTTY)) >= 0) {
                         free(shellPath);
                         free(pPaths);
+                        puts("opened in PATH");
                         goto shellexec;
                     }
                     free(shellPath);
