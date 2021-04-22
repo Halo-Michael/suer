@@ -88,7 +88,6 @@ shellexec:
                     if ((fd = open(shellPath, O_RDONLY|O_NOCTTY)) >= 0) {
                         free(shellPath);
                         free(pPaths);
-                        puts("opened in PATH");
                         goto shellexec;
                     }
                     free(shellPath);
